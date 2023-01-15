@@ -4,11 +4,11 @@ package study.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
@@ -165,6 +165,57 @@ public class MemberTest {
 
         System.out.println("findMemberC = " + findMember.get().getCreatedDate());
         System.out.println("findMemberD = " + findMember.get().getLastModifiedDate());
+
+    }
+
+    @Test
+    public void Example() throws Exception{
+        Member member1 = new Member("member1",10,null);
+        Member member2 = new Member("member2",20,null);
+        Member member3 = new Member("member1",40,null);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        Example<Member> example = Example.of(member1);
+        List<Member> findAll = memberRepository.findAll(example);
+
+        System.out.println("findAll = " + findAll);
+    }
+
+    @Test
+    public void projections() throws Exception{
+        Team teamA = new Team("레알마드리드");
+        Team teamB = new Team("바르셀로나");
+        Team teamC = new Team("아틀레티코");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+        teamRepository.save(teamC);
+        Member m1 = new Member("AAA", 10, teamA);
+        Member m2 = new Member("BBB", 20, teamB);
+        Member m3 = new Member("AAA", 20, teamC);
+        Member m4 = new Member("BBB", 30, teamC);
+        Member m5 = new Member("DDD", 40, teamA);
+        Member m6 = new Member("CCC", 50, teamB);
+        Member m7 = new Member("zzz", 60, teamA);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+        memberRepository.save(m3);
+        memberRepository.save(m4);
+        memberRepository.save(m5);
+        memberRepository.save(m6);
+        memberRepository.save(m7);
+
+        em.flush();
+        em.clear();
+
+        List<NameOnly> findA = memberRepository.findProjectionsByName("AAA");
+
+        for (NameOnly ua : findA) {
+            System.out.println("ua = " + ua.getName());
+        }
 
     }
 

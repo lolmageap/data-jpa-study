@@ -2,7 +2,6 @@ package study.datajpa.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.dto.MemberDto;
@@ -10,6 +9,7 @@ import study.datajpa.entity.Member;
 
 import javax.persistence.LockModeType;
 import javax.persistence.QueryHint;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,4 +58,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> , MemberRe
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Member> findLockByName(@Param("name") String name);
+    List<NameOnly> findProjectionsByName(@Param("name") String name);
+    <T> Type findProjectionsClassByName(@Param("name") String name, Class<T> type);
 }
